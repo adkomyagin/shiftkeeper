@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+    
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>WEB-INF/config.properties</value>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="crowdService" class="com.tengen.shiftkeeper.CrowdServiceImpl">
+    	<property name="restTemplate" ref="restTemplate"/>
+    	<property name="crowdUrl">
+			<value>${crowd.url}</value>
+		</property>
+    </bean>
+    
+    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+    	<constructor-arg ref="httpClientFactory"/>   
+
+    </bean>
+    
+    <bean id="httpClient" class="org.apache.commons.httpclient.HttpClient">
+    	<property name="state" ref="httpState"/>
+	</bean>
+
+	<bean id="httpState" class="com.tengen.shiftkeeper.CustomHttpState">
+   		<property name="credentials" ref="credentials"/>
+	</bean>
+
+	<bean id="credentials" class="org.apache.commons.httpclient.UsernamePasswordCredentials">
+    	<constructor-arg value="${crowd.app_name}"/>
+    	<constructor-arg value="${crowd.password}"/>
+	</bean>
+
+	<bean id="httpClientFactory" class="org.springframework.http.client.CommonsClientHttpRequestFactory">
+    	<constructor-arg ref="httpClient"/>
+	</bean>
+    
+</beans>
