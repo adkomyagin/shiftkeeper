@@ -1,7 +1,12 @@
 package com.tengen.shiftkeeper.www;
 
+import java.security.KeyStore.Entry;
 import java.text.DateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,10 +16,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.tengen.shiftkeeper.common.GroupObject;
 import com.tengen.shiftkeeper.common.UserObject;
 import com.tengen.shiftkeeper.exceptions.CrowdException;
 import com.tengen.shiftkeeper.service.CrowdService;
@@ -26,98 +33,71 @@ import com.tengen.shiftkeeper.service.CrowdService;
 public class HomeController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+	private final static String USER_ATTRIBUTE_NAME = "aUser";
+	private final static String GROUP_ATTRIBUTE_NAME = "aGroup";
+	private final static Map<String, String> JIRA_groups;
+	
+	static {
+        Map<String, String> aMap = new HashMap<String, String>();
+        aMap.put("support", "support@10gen.com");
+        aMap.put("support_us", "support-us@10gen.com");
+        JIRA_groups = Collections.unmodifiableMap(aMap);
+    }
 	
 	@Autowired
 	private CrowdService crowdService;
 	
 	@RequestMapping(value = "/")
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) {
-		ModelAndView view;
+	public ModelAndView handleRequest(@ModelAttribute(value = USER_ATTRIBUTE_NAME) UserObject aUser, @ModelAttribute(value = GROUP_ATTRIBUTE_NAME) GroupObject aGroup, HttpServletRequest request) {
+		ModelAndView view = new ModelAndView("home");
+		String group = JIRA_groups.get(aGroup.getName());
+		logger.info("Ololo " + request.getParameter("group"));
 		
-		view = new ModelAndView("home");
-		
+		group = JIRA_groups.get(request.getParameter("group"));
 		if( request.getParameter("add")!=null ) {
-			logger.info("Adding {}", request.getParameter("email"));
+			logger.info("Adding {} to " + group, request.getParameter("email"));
 			try {
 				UserObject user = crowdService.getUserByEmail(request.getParameter("email"));
 				if (user != null)
 				{
 					logger.info("Detected name: {}", user.getName());
-					crowdService.addUserToGroup(user, "support@10gen.com");
+					crowdService.addUserToGroup(user, group);
 				}
 			} catch (CrowdException e) {
 				logger.info("Oh shit: {}", e.getMessage());
+				view.addObject("error", e.getMessage() );
 			}
 			
         }
 		
 		if( request.getParameter("remove")!=null ) {
-			logger.info("Removing {}", request.getParameter("name"));
+			logger.info("Removing {} from " + group, aUser.getName());
 			try {
-				crowdService.removeUserFromGroup(new UserObject("ivan", null), "support@10gen.com");
-				//if (user != null)
-				//{
-				//	logger.info("Detected name: {}", "DD");
-				//	crowdService.addUserToGroup(user, "support@10gen.com");
-				//}
+				crowdService.removeUserFromGroup(new UserObject("ivan", null), group);
 			} catch (CrowdException e) {
 				logger.info("Oh shit: {}", e.getMessage());
+				view.addObject("error", e.getMessage() );
 			}
 			
         }
 		
 		Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
-		
 		String formattedDate = dateFormat.format(date);
-		
 		view.addObject("serverTime", formattedDate );
-		try {
-			view.addObject("users", crowdService.getGroupMembers("support@10gen.com") );
-		} catch (CrowdException e) {
-			logger.info("Oh shit: {}", e.getMessage());
+		
+		Iterator<java.util.Map.Entry<String, String>> iter = JIRA_groups.entrySet().iterator();
+		while(iter.hasNext())
+		{
+			java.util.Map.Entry<String, String> entry = iter.next();
+			try {
+				view.addObject(entry.getKey(), crowdService.getGroupMembers(entry.getValue()) );
+			} catch (CrowdException e) {
+				logger.info("Oh shit: {}", e.getMessage());
+				view.addObject("error", e.getMessage() );
+			}
 		}
 		
 		return view;
 	}
-	/**
-	 * Simply selects the home view to render by returning its name.
-	 */
-	/*@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home(Locale locale, Model model) {
-		logger.info("Welcome home! The client locale is {}.", locale);
-		
-		Date date = new Date();
-		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
-		
-		String formattedDate = dateFormat.format(date);
-		
-		model.addAttribute("serverTime", formattedDate );
-		String[] arr = new String[2];
-		arr[0] = "A";
-		arr[1] = "B";
-		model.addAttribute("arr", arr );
-		
-		return "home";
-	}
-	
-	@RequestMapping(value = "/", method = RequestMethod.POST)
-	public String home1(Locale locale, Model model) {
-		logger.info("Welcome home! The client locale is {}.", locale);
-		if (model.containsAttribute("add"))
-				logger.info(":S:S:S");
-		
-		Date date = new Date();
-		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
-		
-		String formattedDate = dateFormat.format(date);
-		
-		model.addAttribute("serverTime", formattedDate );
-		String[] arr = new String[2];
-		arr[0] = "A";
-		arr[1] = "B";
-		model.addAttribute("arr", arr );
-		
-		return "home";
-	}*/
 }
