@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.tengen.shiftkeeper.common.GroupObject;
+import com.tengen.shiftkeeper.common.RequestContextObject;
 import com.tengen.shiftkeeper.common.UserObject;
 import com.tengen.shiftkeeper.exceptions.CrowdException;
 import com.tengen.shiftkeeper.service.CrowdService;
@@ -33,8 +34,7 @@ import com.tengen.shiftkeeper.service.CrowdService;
 public class HomeController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
-	private final static String USER_ATTRIBUTE_NAME = "aUser";
-	private final static String GROUP_ATTRIBUTE_NAME = "aGroup";
+	private final static String ATTRIBUTE_NAME = "aRequest";
 	private final static Map<String, String> JIRA_groups;
 	
 	static {
@@ -48,16 +48,15 @@ public class HomeController {
 	private CrowdService crowdService;
 	
 	@RequestMapping(value = "/")
-	public ModelAndView handleRequest(@ModelAttribute(value = USER_ATTRIBUTE_NAME) UserObject aUser, @ModelAttribute(value = GROUP_ATTRIBUTE_NAME) GroupObject aGroup, HttpServletRequest request) {
+	public ModelAndView handleRequest(@ModelAttribute(value = ATTRIBUTE_NAME) RequestContextObject aRequest, HttpServletRequest request) {
 		ModelAndView view = new ModelAndView("home");
-		String group = JIRA_groups.get(aGroup.getName());
-		logger.info("Ololo " + request.getParameter("group"));
+		String group = JIRA_groups.get(aRequest.getGroup().getName());
 		
-		group = JIRA_groups.get(request.getParameter("group"));
+		//Check if we want to add someone
 		if( request.getParameter("add")!=null ) {
-			logger.info("Adding {} to " + group, request.getParameter("email"));
+			logger.info("Adding {} to " + group, aRequest.getUser().getEmail());
 			try {
-				UserObject user = crowdService.getUserByEmail(request.getParameter("email"));
+				UserObject user = crowdService.getUserByEmail(aRequest.getUser().getEmail());
 				if (user != null)
 				{
 					logger.info("Detected name: {}", user.getName());
@@ -70,10 +69,11 @@ public class HomeController {
 			
         }
 		
+		//Check if we want to remove someone
 		if( request.getParameter("remove")!=null ) {
-			logger.info("Removing {} from " + group, aUser.getName());
+			logger.info("Removing {} from " + group, aRequest.getUser().getName());
 			try {
-				crowdService.removeUserFromGroup(new UserObject("ivan", null), group);
+				crowdService.removeUserFromGroup(aRequest.getUser(), group);
 			} catch (CrowdException e) {
 				logger.info("Oh shit: {}", e.getMessage());
 				view.addObject("error", e.getMessage() );
@@ -81,6 +81,7 @@ public class HomeController {
 			
         }
 		
+		//Fill the data into the model
 		Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
 		String formattedDate = dateFormat.format(date);

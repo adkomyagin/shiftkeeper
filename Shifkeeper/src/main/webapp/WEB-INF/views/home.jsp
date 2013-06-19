@@ -16,63 +16,56 @@
 
 	<div id="body">
 
-		<table style="display: inline-block;" align='center'>
+		<table style="float: left;" align='center'>
 			<tr>
 			<td><i>Support Team</i></td>
 			</tr>
-			<form:form align='center' method='post' commandName="aGroup">
-			<form:hidden path="name" value="support" />
 			<tr>
-				<form align='center' method='post'>
-					<td><input type='search' size='30' name='email'
-						placeholder='Enter the email' required><br></td>
+				<form:form align='center' method='post' commandName="aRequest">
+				    <form:hidden path="group.name" value="support" />
+					<td><form:input type='search' size='30' path='user.email' placeholder='Enter the email'/><br></td>
 					<td colspan=2><input type="submit" align="center" name="add"
 						value="Add"></td>
 			</tr>
-			</form>
+			</form:form>
 
 			<c:forEach items="${requestScope.support}" var="user">
 				<tr>
-					<form:form align='center' method='post' commandName="aUser">
+					<form:form align='center' method='post' commandName="aRequest">
 						<td>${user.displayName}</td>
-						<form:hidden path="name" value="${user.name}" />
-						
+						<form:hidden path="user.name" value="${user.name}" />
+						<form:hidden path="group.name" value="support" />
 						<td colspan=2><input type="submit" align="center"
 							name="remove" value="Remove"></td>
 				</tr>
 				</form:form>
 			</c:forEach>
-			</form:form>
 		</table>
 
-<table style="display: inline-block;" align='center'>
+<table style="float: right;" align='center'>
 			<tr>
 			<td><i>Team USA</i></td>
 			</tr>
-			<form:form align='center' method='post' commandName="aGroup">
-			<form:hidden path="name" value="support_us" />
 			<tr>
-				<form align='center' method='post'>
-				    <input type='hidden' name='group' value='support_us'>
-					<td><input type='search' size='30' name='email'
-						placeholder='Enter the email' required><br></td>
+				<form:form align='center' method='post' commandName="aRequest">
+				    <form:hidden path="group.name" value="support_us" />
+					<td><form:input type='search' size='30' path='user.email' placeholder='Enter the email'/><br></td>
 					<td colspan=2><input type="submit" align="center" name="add"
 						value="Add"></td>
 			</tr>
-			</form>
+			</form:form>
 			
 			<c:forEach items="${requestScope.support_us}" var="user">
 				<tr>
-					<form:form align='center' method='post' commandName="aUser">
+					<form:form align='center' method='post' commandName="aRequest">
 						<td>${user.displayName}</td>
-						<form:hidden path="name" value="${user.name}" />
-						
+						<form:hidden path="user.name" value="${user.name}" />
+						<form:hidden path="group.name" value="support_us" />
 						<td colspan=2><input type="submit" align="center"
 							name="remove" value="Remove"></td>
 				</tr>
 				</form:form>
 			</c:forEach>
-			</form:form>
 		</table>
 
 	</div>
