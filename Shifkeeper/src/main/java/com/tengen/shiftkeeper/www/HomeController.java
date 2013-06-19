@@ -1,4 +1,4 @@
-package com.tengen.shiftkeeper;
+package com.tengen.shiftkeeper.www;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -14,6 +14,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.tengen.shiftkeeper.common.UserObject;
+import com.tengen.shiftkeeper.exceptions.CrowdException;
+import com.tengen.shiftkeeper.service.CrowdService;
 
 /**
  * Handles requests for the application home page.

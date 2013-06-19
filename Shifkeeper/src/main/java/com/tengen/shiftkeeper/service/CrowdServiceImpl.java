@@ -1,10 +1,14 @@
-package com.tengen.shiftkeeper;
+package com.tengen.shiftkeeper.service;
 
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestTemplate;
+
+import com.tengen.shiftkeeper.common.UserObject;
+import com.tengen.shiftkeeper.common.UserSearchResponseObject;
+import com.tengen.shiftkeeper.exceptions.CrowdException;
 
 public class CrowdServiceImpl implements CrowdService {
 	private static final Logger logger = LoggerFactory.getLogger(CrowdService.class);
@@ -34,7 +38,7 @@ public class CrowdServiceImpl implements CrowdService {
 			
 			return results.getUsers().get(0);
 		} catch(Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			throw new CrowdException(e.getMessage());
 		}
 	}
@@ -46,7 +50,7 @@ public class CrowdServiceImpl implements CrowdService {
 			restTemplate.postForObject(crowdUrl + "/group/user/direct?groupname={param}", user, UserObject.class, groupName);
 			
 		} catch(Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			throw new CrowdException(e.getMessage());
 		}
 	}
@@ -58,7 +62,7 @@ public class CrowdServiceImpl implements CrowdService {
 			restTemplate.delete(crowdUrl + "/group/user/direct?groupname={param}&username={param}",groupName, user.getName());
 			
 		} catch(Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			throw new CrowdException(e.getMessage());
 		}
 	}
@@ -77,7 +81,7 @@ public class CrowdServiceImpl implements CrowdService {
 			
 			return results.getUsers();
 		} catch(Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			throw new CrowdException(e.getMessage());
 		}
 	}

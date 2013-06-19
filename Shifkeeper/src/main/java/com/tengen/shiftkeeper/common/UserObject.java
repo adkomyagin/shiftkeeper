@@ -1,4 +1,4 @@
-package com.tengen.shiftkeeper;
+package com.tengen.shiftkeeper.common;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;

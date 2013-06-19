@@ -1,4 +1,4 @@
-package com.tengen.shiftkeeper;
+package com.tengen.shiftkeeper.utils;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpState;

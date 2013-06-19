@@ -1,4 +1,4 @@
-package com.tengen.shiftkeeper;
+package com.tengen.shiftkeeper.exceptions;
 
 public class CrowdException extends Exception {
 

@@ -13,7 +13,7 @@
         </property>
     </bean>
     
-    <bean id="crowdService" class="com.tengen.shiftkeeper.CrowdServiceImpl">
+    <bean id="crowdService" class="com.tengen.shiftkeeper.service.CrowdServiceImpl">
     	<property name="restTemplate" ref="restTemplate"/>
     	<property name="crowdUrl">
 			<value>${crowd.url}</value>
@@ -29,7 +29,7 @@
     	<property name="state" ref="httpState"/>
 	</bean>
 
-	<bean id="httpState" class="com.tengen.shiftkeeper.CustomHttpState">
+	<bean id="httpState" class="com.tengen.shiftkeeper.utils.CustomHttpState">
    		<property name="credentials" ref="credentials"/>
 	</bean>
 
