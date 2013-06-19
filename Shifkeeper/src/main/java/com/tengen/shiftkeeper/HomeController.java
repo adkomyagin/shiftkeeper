@@ -49,16 +49,16 @@ public class HomeController {
 		
 		if( request.getParameter("remove")!=null ) {
 			logger.info("Removing {}", request.getParameter("name"));
-//			try {
-//				UserObject user = crowdService.getUserByEmail("DD");
-//				//if (user != null)
-//				//{
-//				//	logger.info("Detected name: {}", "DD");
-//				//	crowdService.addUserToGroup(user, "support@10gen.com");
-//				//}
-//			} catch (CrowdException e) {
-//				logger.info("Oh shit: {}", e.getMessage());
-//			}
+			try {
+				crowdService.removeUserFromGroup(new UserObject("ivan", null), "support@10gen.com");
+				//if (user != null)
+				//{
+				//	logger.info("Detected name: {}", "DD");
+				//	crowdService.addUserToGroup(user, "support@10gen.com");
+				//}
+			} catch (CrowdException e) {
+				logger.info("Oh shit: {}", e.getMessage());
+			}
 			
         }
 		
