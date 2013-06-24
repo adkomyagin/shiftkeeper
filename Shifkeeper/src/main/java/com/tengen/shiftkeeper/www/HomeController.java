@@ -1,12 +1,16 @@
 package com.tengen.shiftkeeper.www;
 
 import java.security.KeyStore.Entry;
+
 import java.text.DateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.*;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,6 +30,7 @@ import com.tengen.shiftkeeper.common.RequestContextObject;
 import com.tengen.shiftkeeper.common.UserObject;
 import com.tengen.shiftkeeper.exceptions.CrowdException;
 import com.tengen.shiftkeeper.service.CrowdService;
+import com.tengen.shiftkeeper.utils.UserFilter;
 
 /**
  * Handles requests for the application home page.
@@ -51,6 +56,7 @@ public class HomeController {
 	public ModelAndView handleRequest(@ModelAttribute(value = ATTRIBUTE_NAME) RequestContextObject aRequest, HttpServletRequest request) {
 		ModelAndView view = new ModelAndView("home");
 		String group = JIRA_groups.get(aRequest.getGroup().getName());
+		UserFilter filter = null;
 		
 		//Check if we want to add someone
 		if( request.getParameter("add")!=null ) {
@@ -81,6 +87,11 @@ public class HomeController {
 			
         }
 		
+		//Check if the filtering was requested
+		if( request.getParameter("filter")!=null ) {
+			filter = new UserFilter(aRequest.getUser().getName());
+        }
+		
 		//Fill the data into the model
 		Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG);
@@ -92,7 +103,12 @@ public class HomeController {
 		{
 			java.util.Map.Entry<String, String> entry = iter.next();
 			try {
-				view.addObject(entry.getKey(), crowdService.getGroupMembers(entry.getValue()) );
+				List<UserObject> users = crowdService.getGroupMembers(entry.getValue());
+				if ((filter != null) && entry.getKey().equals(aRequest.getGroup().getName())) {
+					logger.info("Filtering by {} from " + entry.getKey(), aRequest.getUser().getName());
+					users = filter.filter(users);
+				}
+				view.addObject(entry.getKey(), users );
 			} catch (CrowdException e) {
 				logger.info("Oh shit: {}", e.getMessage());
 				view.addObject("error", e.getMessage() );

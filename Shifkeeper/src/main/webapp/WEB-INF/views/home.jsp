@@ -40,6 +40,15 @@
 				</tr>
 				</form:form>
 			</c:forEach>
+			
+			<tr>
+				<form:form align='center' method='post' commandName="aRequest">
+				    <form:hidden path="group.name" value="support" />
+					<td><form:input type='search' size='30' path='user.name' placeholder='Enter the name'/><br></td>
+					<td colspan=2><input type="submit" align="center" name="filter"
+						value="Filter"></td>
+			</tr>
+			</form:form>
 		</table>
 
 <table style="float: right;" align='center'>
@@ -66,6 +75,15 @@
 				</tr>
 				</form:form>
 			</c:forEach>
+			
+			<tr>
+				<form:form align='center' method='post' commandName="aRequest">
+				    <form:hidden path="group.name" value="support_us" />
+					<td><form:input type='search' size='30' path='user.name' placeholder='Enter the name'/><br></td>
+					<td colspan=2><input type="submit" align="center" name="filter"
+						value="Filter"></td>
+			</tr>
+			</form:form>
 		</table>
 
 	</div>
