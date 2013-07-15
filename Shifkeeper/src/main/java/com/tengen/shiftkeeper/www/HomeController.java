@@ -44,8 +44,8 @@ public class HomeController {
 	
 	static {
         Map<String, String> aMap = new HashMap<String, String>();
-        aMap.put("support", "support@10gen.com");
-        aMap.put("support_us", "support-us@10gen.com");
+        aMap.put("support", "10gen-support-team");
+        aMap.put("support_us", "10gen-on-duty-today");
         JIRA_groups = Collections.unmodifiableMap(aMap);
     }
 	
